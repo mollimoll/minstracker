@@ -1,4 +1,5 @@
 import Head from "next/head";
+import { useEffect } from "react";
 import {
   useForm,
   useWatch,
@@ -101,6 +102,44 @@ export default function Home() {
       weeksSkipped: 0,
     },
   });
+
+  useEffect(() => {
+    const getData = async () => {
+      // step 1: authenticate with Peloton
+      const body = {
+        username_or_email: process.env.PELOTON_USERNAME,
+        password: process.env.PELOTON_PASSWORD,
+      };
+
+      // const response = await fetch("https://api.onepeloton.com/auth/login", {
+      //   method: "post",
+      //   body: JSON.stringify(body),
+      //   headers: { "Content-Type": "application/json" },
+      //   mode: "same-origin",
+      // });
+      // const authData = await response.json();
+
+      const authData = {
+        session_id: "d93f074345f04414ace9fd7cdf40f979",
+        user_id: "c07c7efb6c2f42eaa9a3eea0c09f4fc3",
+      };
+
+      const opts = {
+        headers: {
+          cookie: `peloton_session_id=${authData.session_id};`,
+          "peloton-platform": "web",
+        },
+      };
+
+      // Step 2: retrieve workout data from the overview
+      const responseOverview = await fetch(
+        `https://api.onepeloton.com.au/api/user/${authData.user_id}/overview`,
+        opts
+      );
+    };
+
+    void getData();
+  }, []);
 
   return (
     <>
